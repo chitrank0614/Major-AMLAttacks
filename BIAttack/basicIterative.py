@@ -23,7 +23,6 @@ def iterativeAttack(image_path="goldfish.jpg", eps=200, num_iter=10):
     orig = cv2.imread(image_path)[..., ::-1]
     orig = cv2.resize(orig, (IMG_SIZE, IMG_SIZE))
     img = orig.copy().astype(np.float32)
-    #perturbation = np.empty_like(orig)
 
     mean = [0.485, 0.456, 0.406]
     std = [0.229, 0.224, 0.225]
@@ -31,7 +30,6 @@ def iterativeAttack(image_path="goldfish.jpg", eps=200, num_iter=10):
     img = (img - mean)/std
     img = img.transpose(2, 0, 1)
 
-    # load model
     model = getattr(models, model_name)(pretrained=True)
     model.eval()
     criterion = nn.CrossEntropyLoss()
@@ -59,34 +57,30 @@ def iterativeAttack(image_path="goldfish.jpg", eps=200, num_iter=10):
 
     attack = ""
     for i in range(num_iter):
-        ##############################################################
         out = model(inp)
         loss = criterion(out, Variable(
             torch.Tensor([float(pred)]).to(device).long()))
 
         loss.backward()
 
-        # this is the method
         perturbation = (alpha/255.0) * torch.sign(inp.grad.data)
         perturbation = torch.clamp(
             (inp.data + perturbation) - orig, min=-eps/255.0, max=eps/255.0)
         inp.data = orig + perturbation
 
         inp.grad.data.zero_()
-        ################################################################
 
         pred_adv = np.argmax(model(inp).data.cpu().numpy())
         attack = classes[pred_adv].split(',')[0]
         print("Iter [%3d/%3d]:  Prediction: %s"
               % (i, num_iter, classes[pred_adv].split(',')[0]))
 
-    # deprocess image
     adv = inp.data.cpu().numpy()[0]
     pert = (adv-img).transpose(1, 2, 0)
     adv = adv.transpose(1, 2, 0)
     adv = (adv * std) + mean
     adv = adv * 255.0
-    adv = adv[..., ::-1]  # RGB to BGR
+    adv = adv[..., ::-1]
     adv = np.clip(adv, 0, 255).astype(np.uint8)
     pert = pert * 255
     pert = np.clip(pert, 0, 255).astype(np.uint8)

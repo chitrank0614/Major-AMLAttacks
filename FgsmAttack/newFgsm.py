@@ -24,7 +24,6 @@ def fgsmAttack(image_path="goldfish.jpg", eps=20):
     print('Image: %s' % (image_path))
     print()
 
-    # preprocess as described here: http://pytorch.org/docs/master/torchvision/models.html
     orig = cv2.imread(image_path)[..., ::-1]
     orig = cv2.resize(orig, (IMG_SIZE, IMG_SIZE))
     img = orig.copy().astype(np.float32)
@@ -36,7 +35,6 @@ def fgsmAttack(image_path="goldfish.jpg", eps=20):
     img = (img - mean)/std
     img = img.transpose(2, 0, 1)
 
-    # load model
     model = getattr(models, model_name)(pretrained=True)
     model.eval()
     criterion = nn.CrossEntropyLoss()
@@ -55,10 +53,8 @@ def fgsmAttack(image_path="goldfish.jpg", eps=20):
     loss = criterion(out, Variable(
         torch.Tensor([float(pred)]).to(device).long()))
 
-    # compute gradients
     loss.backward()
 
-    # this is it, this is the method
     inp.data = inp.data + ((eps/255.0) * torch.sign(inp.grad.data))
     inp.grad.data.zero_()  # unnecessary
 
@@ -68,14 +64,13 @@ def fgsmAttack(image_path="goldfish.jpg", eps=20):
     #         %(eps, classes[pred_adv].split(',')[0]), end="\r")#, end='\r')#'eps:', eps, end='\r')
 
     # return classes[pred_adv]
-    # deprocess image
     adv = inp.data.cpu().numpy()[0]
     # cv2.normalize((adv - img).transpose(1, 2, 0), perturbation, 0, 255, cv2.NORM_MINMAX, 0)
     perturbation = (adv - img).transpose(1, 2, 0)
     adv = adv.transpose(1, 2, 0)
     adv = (adv * std) + mean
     adv = adv * 255.0
-    adv = adv[..., ::-1]  # RGB to BGR
+    adv = adv[..., ::-1]
     adv = np.clip(adv, 0, 255).astype(np.uint8)
     perturbation = perturbation * 255
     perturbation = np.clip(perturbation, 0, 255).astype(np.uint8)
@@ -86,7 +81,6 @@ def fgsmAttack(image_path="goldfish.jpg", eps=20):
 
     return classes[pred_adv]
 
-    # # display images
     # cv2.imshow(window_adv, perturbation)
     # cv2.imshow('adversarial image', adv)
     # key = cv2.waitKey(500) & 0xFF

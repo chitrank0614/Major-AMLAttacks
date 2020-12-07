@@ -24,7 +24,7 @@ idx2label = [class_idx[str(k)][1] for k in range(len(class_idx))]
 
 transform = transforms.Compose([
     transforms.Resize((299, 299)),
-    transforms.ToTensor(),  # ToTensor : [0, 255] -> [0, 1]
+    transforms.ToTensor(),
 ])
 
 model = models.inception_v3(pretrained=True).to(device)
@@ -35,7 +35,7 @@ def imshow(img):
     npimg = img.numpy()
     adv = np.transpose(npimg, (1, 2, 0))
     adv = cv2.convertScaleAbs(adv, alpha=(255.0))
-    adv = adv[..., ::-1]  # RGB to BGR
+    adv = adv[..., ::-1]
     return adv
 
 
@@ -44,7 +44,6 @@ def cw_l2_attack(model, images, labels, max_iter, targeted=False, c=1e-4, kappa=
         return images
     images = images.to(device)
     labels = labels.to(device)
-    # Define f-function
 
     def f(x):
 
@@ -54,11 +53,9 @@ def cw_l2_attack(model, images, labels, max_iter, targeted=False, c=1e-4, kappa=
         i, _ = torch.max((1-one_hot_labels)*outputs, dim=1)
         j = torch.masked_select(outputs, one_hot_labels.byte())
 
-        # If targeted, optimize for making the other class most likely
         if targeted:
             return torch.clamp(i-j, min=-kappa)
 
-        # If untargeted, optimize for making the other class most likely
         else:
             return torch.clamp(j-i, min=-kappa)
 
