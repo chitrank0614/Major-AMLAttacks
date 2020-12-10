@@ -14,6 +14,8 @@ def index(request):
 
 def fetchFGSMAttack(request):
     try:
+        print()
+        print("Request: FGSM Attack")
         image_name = request.GET.get("image_name")
         epsilon_value = request.GET.get("epsilon_value")
         epsilon_value = int(epsilon_value)*255//100
@@ -27,6 +29,8 @@ def fetchFGSMAttack(request):
 
 def fetchCWAttack(request):
     try:
+        print()
+        print("Request: CW Attack")
         image_name = request.GET.get("image_name")
         epsilon_value = request.GET.get("epsilon_value")
         classes = newCWAttack.cwAttack(image_name, int(epsilon_value))
@@ -39,9 +43,10 @@ def fetchCWAttack(request):
 
 def fetchOnePixelAttackPredict(request):
     try:
+        print()
+        print("Request: OnePixel Attack")
         image_name = request.GET.get("image_name")
         classes = onePixelAttack.onePixelAttackUtil1(image_name)
-        print(classes)
         if classes:
             return JsonResponse({"status": "found",  "message": "Results obtained", "classes": classes[0], "percent": classes[1]*100})
         return JsonResponse({"status": "not found",  "message": "Can't classify", "classes": "", "percent": 0})
@@ -51,11 +56,12 @@ def fetchOnePixelAttackPredict(request):
 
 def fetchOnePixelAttack(request):
     try:
+        print()
+        print("Request: OnePixel Attack")
         image_name = request.GET.get("image_name")
         epsilon_value = request.GET.get("epsilon_value")
         epsilon_value = 100-int(epsilon_value)
         classes = onePixelAttack.onePixelAttackUtil2(image_name, epsilon_value)
-        print(classes)
         if classes:
             return JsonResponse({"status": "found",  "message": "Results obtained", "classes": classes[0], "percent": classes[1]*100})
         return JsonResponse({"status": "not found",  "message": "Can't classify", "classes": "", "percent": 0})
@@ -65,6 +71,8 @@ def fetchOnePixelAttack(request):
 
 def fetchBIAttack(request):
     try:
+        print()
+        print("Request: Basic Iterative Attack")
         image_name = request.GET.get("image_name")
         epsilon_value = request.GET.get("epsilon_value")
         iteration_count = request.GET.get("iteration_count")

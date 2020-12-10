@@ -82,8 +82,10 @@ def callback(x, convergence):
 
 def onePixelAttackUtil1(_image_path):
     image_path = "./OnePixelAttack/images/"+_image_path
-    print('Request: One Pixel Attack Method')
-    print("Predict: Image Received: %s" % (_image_path))
+
+    print()
+    print("Model: Basic CNN")
+    print("Image: %s" % (_image_path))
     orig = cv2.imread(image_path)[..., ::-1]
     orig = cv2.resize(orig, (32, 32))
     global img
@@ -100,8 +102,10 @@ def onePixelAttackUtil1(_image_path):
     global prob_orig
     prob_orig = softmax(model(inp).data.numpy()[0])
     pred_orig = np.argmax(prob_orig)
+    print()
     print('Prediction before attack: %s' % (cifar10_class_names[pred_orig]))
     print('Probability: %f' % (prob_orig[pred_orig]))
+    print()
     return cifar10_class_names[pred_orig], prob_orig[pred_orig]
 
 
@@ -109,8 +113,9 @@ def onePixelAttackUtil2(_image_path, _d):
 
     image_path = "./OnePixelAttack/images/"+_image_path
     d = _d
-    print('Request: One Pixel Attack Method')
-    print("Attack: Image Received: %s, Epsilon: %s" % (_image_path, d))
+    print()
+    print("Model: Basic CNN")
+    print("Image: %s \nEpsilon: %s\n" % (_image_path, d))
     orig = cv2.imread(image_path)[..., ::-1]
     orig = cv2.resize(orig, (32, 32))
     global img
@@ -151,5 +156,6 @@ def onePixelAttackUtil2(_image_path, _d):
     cv2.imwrite('./static/images/onepixelattack/adversarial.jpg',
                 finalImg)
 
+    print()
     return (cifar10_class_names[pred_adv], prob_adv)
     exit(0)

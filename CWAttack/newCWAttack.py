@@ -86,9 +86,13 @@ def cw_l2_attack(model, images, labels, max_iter, targeted=False, c=1e-4, kappa=
 
 
 def cwAttack(image_path="./monkey.jpg", itr=4):
-    print("True Image & True Label")
+
     image_path = "./CWAttack/images/"+image_path
-    print(image_path)
+    print()
+    print("Model: Inception V3")
+    print("Image: %s" % (image_path))
+    print("Iterations: %d" % (itr))
+    print()
     orig = cv2.imread(image_path)[..., ::-1]
     orig = cv2.resize(orig, (IMG_SIZE, IMG_SIZE))
     img = orig.copy().astype(np.float32)
@@ -104,9 +108,10 @@ def cwAttack(image_path="./monkey.jpg", itr=4):
     outputs = model(images)
 
     _, labels = torch.max(outputs.data, 1)
-    print(idx2label[labels.item()])
 
-    print("Attack Image & Predicted Label")
+    print("Prediction Before Attack")
+    print(idx2label[labels.item()])
+    print()
 
     model.eval()
 
@@ -123,4 +128,5 @@ def cwAttack(image_path="./monkey.jpg", itr=4):
     result = idx2label[pre.item()]
     result = result.split("_")
     result = " ".join(result)
+    print("Predicted Label After Attack: %s\n" % (result))
     return result

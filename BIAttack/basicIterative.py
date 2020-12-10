@@ -16,10 +16,11 @@ model_name = "resnet18"
 
 def iterativeAttack(image_path="goldfish.jpg", eps=200, num_iter=10):
     image_path = "./BIAttack/images/"+image_path
-    print('Iterative Method')
+    print()
     print('Model: %s' % (model_name))
     print('Image: % s' % (image_path))
-    print('Epsilon Value: %s Number of Iterations: %s' % (eps, num_iter))
+    print('Epsilon Value: %s \nNumber of Iterations: %s' % (eps, num_iter))
+    print()
     orig = cv2.imread(image_path)[..., ::-1]
     orig = cv2.resize(orig, (IMG_SIZE, IMG_SIZE))
     img = orig.copy().astype(np.float32)
@@ -90,7 +91,8 @@ def iterativeAttack(image_path="goldfish.jpg", eps=200, num_iter=10):
 
     cv2.imwrite("./static/images/biattack/adversarial.jpg", adv)
     cv2.imwrite("./static/images/biattack/perbutation.jpg", pert)
-
+    print("\nAfter Attack: %s" % (attack))
+    print()
     return prediction, attack
     # cv2.imshow("perbutation", pert)
     # cv2.imshow('adversarial image', adv)

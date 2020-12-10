@@ -19,9 +19,10 @@ def fgsmAttack(image_path="goldfish.jpg", eps=20):
     model_name = "resnet18"
     IMG_SIZE = 224
 
-    print('Request: Fast Gradient Sign Method')
+    print()
     print('Model: %s' % (model_name))
     print('Image: %s' % (image_path))
+    print("Epsilon Value: %d" % (eps))
     print()
 
     orig = cv2.imread(image_path)[..., ::-1]
@@ -79,6 +80,8 @@ def fgsmAttack(image_path="goldfish.jpg", eps=20):
     cv2.imwrite("./static/images/fgsmattack/fgsmAdversarial.jpg", adv)
     cv2.imwrite("./static/images/fgsmattack/perbutation.jpg", perturbation)
 
+    print("Classification: ", classes[pred_adv])
+    print()
     return classes[pred_adv]
 
     # cv2.imshow(window_adv, perturbation)
